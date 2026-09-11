@@ -43,6 +43,8 @@ textarea{resize:vertical;min-height:60px}
 .ms-option.selected{color:var(--pri);font-weight:600}
 .ms-option .check{width:16px;text-align:center}
 .ms-no-results{padding:10px 12px;color:var(--txt-lt);font-size:14px;font-style:italic}
+.ms-done{position:sticky;bottom:0;display:block;width:100%;padding:10px;border:none;border-top:1px solid var(--bdr);background:var(--pri-lt);color:var(--pri-dk);font-size:14px;font-weight:600;cursor:pointer;text-align:center}
+.ms-done:hover{background:var(--pri);color:#fff}
 .checkbox-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .cb-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1.5px solid var(--bdr);border-radius:8px;cursor:pointer;font-size:14px;transition:all .15s;user-select:none}
 .cb-item:hover{border-color:var(--pri)}
@@ -181,7 +183,7 @@ const SPREADSHEET_ID='13O1iwibCq5UBzpi_2U9DO_qhlGrG4BdAyM8XddNIoS4';
 // ================================
 
 const SHEETS_API='https://sheets.googleapis.com/v4/spreadsheets/'+SPREADSHEET_ID+'/values/';
-const FOODS=['Apples','Asparagus','Avocado','Banana','Beans','Beef','Blueberry','Bread','Broccoli','Carrot','Cereal','Cheese','Chicken','Chips','Chocolate','Coffee','Corn','Cucumber','Eggplant','Eggs','Fish','Grapes','Hummus','Ice Cream','Kale','Lentils','Lettuce','Mango','Milk','Mushrooms','Noodles','Oatmeal','Onion','Oranges','Pasta','Peanut Butter','Pears','Pepper','Pizza','Pork','Potato','Quinoa','Raspberry','Rice','Salmon','Spinach','Strawberry','Sweet Potato','Tea','Tofu','Tomato','Trail Mix','Turkey','Watermelon','Yogurt'];
+const FOODS=['Apples','Asparagus','Avocado','Banana','Beans','Beef','Blueberry','Bread','Broccoli','Carrot','Cereal','Cheese','Chicken','Chips','Chocolate','Coffee','Cookies','Corn','Cucumber','Eggplant','Eggs','Fish','Grapes','Honey','Hummus','Ice Cream','Kale','Lentils','Lettuce','Mango','Milk','Mushrooms','Noodles','Oatmeal','Onion','Oranges','Pasta','Peanut Butter','Pears','Pepper','Pizza','Popcorn','Pork','Potato','Quinoa','Raspberry','Rice','Salmon','Spinach','Strawberry','Sweet Potato','Tea','Tofu','Tomato','Trail Mix','Turkey','Watermelon','Yogurt'];
 const SYMPTOMS=['Stomach Ache','Diarrhea','Bloating','Nausea','Heartburn','Cramps','Gas','Constipation','Acid Reflux','Fatigue','Headache'];
 let selectedFoods=[],selectedSeverity='',selectedSymptoms=[];
 let accessToken=null;
@@ -283,7 +285,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(e.key==='ArrowDown'){e.preventDefault();highlightIdx=Math.min(highlightIdx+1,opts.length-1);updateHighlight(opts);}
     else if(e.key==='ArrowUp'){e.preventDefault();highlightIdx=Math.max(highlightIdx-1,0);updateHighlight(opts);}
     else if(e.key==='Enter'&&highlightIdx>=0){e.preventDefault();const food=opts[highlightIdx].querySelector('span:last-child').textContent;toggleFood(food);}
-    else if(e.key==='Escape'){e.preventDefault();dropdown.classList.remove('open');highlightIdx=-1;input.blur();}
+    else if(e.key==='Escape'){e.preventDefault();closeDropdown();}
   });
   document.addEventListener('click',e=>{
     if(!document.getElementById('contentsWrap').contains(e.target))dropdown.classList.remove('open');
@@ -319,7 +321,17 @@ function renderFoodDropdown(){
     opt.addEventListener('click',e=>{e.stopPropagation();toggleFood(food);});
     dropdown.appendChild(opt);
   });
+  const done=document.createElement('button');
+  done.className='ms-done';done.textContent='Done';done.type='button';
+  done.addEventListener('click',e=>{e.stopPropagation();closeDropdown();});
+  dropdown.appendChild(done);
   dropdown.classList.add('open');
+}
+
+function closeDropdown(){
+  document.getElementById('contentsDropdown').classList.remove('open');
+  document.getElementById('contentsInput').blur();
+  highlightIdx=-1;
 }
 
 function updateHighlight(opts){
